@@ -5,26 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+        }
+        .add-task-form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .add-task-input {
+            flex: 1;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-color: #f0f0f0;
+        }
+        .add-task-btn {
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-color: #f0f0f0;
+        }
+        .task-item {
+            position: relative;
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 20px;
+            background-color: #fff;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            font-size: 18px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .task-item.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .task-delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #dc3545;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="mb-4">To-Do List</h1>
-        <form action="/add" method="post">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Enter task" name="task" required>
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit">Add Task</button>
-                </div>
-            </div>
+        <h1 class="mb-4 text-center">To-Do List</h1>
+        <form action="{{ url_for('add_task') }}" method="post" class="add-task-form">
+            <input type="text" class="form-control add-task-input" placeholder="Enter task" name="task" required>
+            <button class="btn btn-primary add-task-btn"><i class="fas fa-plus"></i></button>
         </form>
-        <ul class="list-group">
-            {% for task in todo_list %}
-                <li class="list-group-item">
-                    {{ task }}
-                    <a href="/delete/{{ loop.index0 }}" class="close">&times;</a>
-                </li>
+        <div class="task-list mt-3">
+            {% for task in tasks %}
+                <div class="alert alert-info" role="alert">
+                    <span>{{ task.content }}</span>
+                    <form action="{{ url_for('delete_task', task_id=task.id) }}" method="post" class="d-inline">
+                        <button type="submit" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </form>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let taskItems = document.querySelectorAll('.task-item');
+            taskItems.forEach(function(item) {
+                item.classList.add('show');
+            });
+        });
+    </script>
 </body>
 </html>
